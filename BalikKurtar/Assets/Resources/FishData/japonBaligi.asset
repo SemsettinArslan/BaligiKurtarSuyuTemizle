@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5491a9179f0e5d845b213fda5e241310, type: 3}
+  m_Name: japonBaligi
+  m_EditorClassIdentifier: Assembly-CSharp::BalikKurtar.Data.FishData
+  fishId: japon-baligi
+  displayName: japon-baligi
+  scientificName: japon-baligi
+  habitat: "JAPONN\t"
+  diet: JAPONN
+  funFact: JAPONN
+  sizeInfo: 5
+  fishImage: {fileID: 21300000, guid: c174ff0e90817a54f950326c6c00ce7b, type: 3}
+  themeColor: {r: 0.9019608, g: 0.53862447, b: 0.10196079, a: 1}

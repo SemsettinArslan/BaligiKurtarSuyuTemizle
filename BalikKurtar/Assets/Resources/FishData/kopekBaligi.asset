@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5491a9179f0e5d845b213fda5e241310, type: 3}
+  m_Name: kopekBaligi
+  m_EditorClassIdentifier: Assembly-CSharp::BalikKurtar.Data.FishData
+  fishId: kopekBaligi
+  displayName: "K\xF6pek Bal\u0131\u011F\u0131"
+  scientificName: Selachimorpha
+  habitat: "\"Okyanuslar, denizler ve baz\u0131 k\u0131y\u0131 b\xF6lgelerinde ya\u015Farlar.
+    Genellikle s\u0131cak ve \u0131l\u0131man denizleri tercih ederler."
+  diet: "Et\xE7ildir. Bal\u0131klar, m\xFCrekkep bal\u0131klar\u0131, deniz memelileri
+    ve baz\u0131 t\xFCrlerde kabuklular ile beslenir."
+  funFact: "K\xF6pek bal\u0131klar\u0131 y\xFCzy\u0131llard\u0131r y\u0131ld\u0131r
+    neredeyse hi\xE7 de\u011Fi\u015Fmeden ya\u015Famlar\u0131n\u0131 s\xFCrd\xFCrmektedir.
+    Baz\u0131 t\xFCrler 300\u2019den fazla di\u015Fe sahip olabilir."
+  sizeInfo: "0.5 m \u2013 12 m"
+  fishImage: {fileID: 21300000, guid: 3c41df5c0a772d04b9f2824229f651be, type: 3}
+  themeColor: {r: 0.9019608, g: 0.10196079, b: 0.11530155, a: 1}

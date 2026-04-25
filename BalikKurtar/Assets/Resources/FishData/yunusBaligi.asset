@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5491a9179f0e5d845b213fda5e241310, type: 3}
+  m_Name: yunusBaligi
+  m_EditorClassIdentifier: Assembly-CSharp::BalikKurtar.Data.FishData
+  fishId: yunusBaligi
+  displayName: Yunus
+  scientificName: Delphinidae
+  habitat: "Okyanuslarda ve baz\u0131 b\xFCy\xFCk denizlerde ya\u015Farlar. Genellikle
+    k\u0131y\u0131ya yak\u0131n b\xF6lgelerde ve s\u0131cak sularda g\xF6r\xFCl\xFCrler."
+  diet: "Et\xE7ildir. Bal\u0131k, kalamar ve k\xFC\xE7\xFCk deniz canl\u0131lar\u0131
+    ile beslenir."
+  funFact: "Yunuslar son derece zeki canl\u0131lard\u0131r ve birbirleriyle sesler
+    ve \u0131sl\u0131klar kullanarak ileti\u015Fim kurarlar. Hatta her yunusun kendine
+    \xF6zg\xFC bir 'isim \u0131sl\u0131\u011F\u0131' vard\u0131r."
+  sizeInfo: "1.5 m \u2013 4 m"
+  fishImage: {fileID: 21300000, guid: 1a18e6dbea21eb84c9726c50f07459e2, type: 3}
+  themeColor: {r: 0.1, g: 0.6, b: 0.9, a: 1}

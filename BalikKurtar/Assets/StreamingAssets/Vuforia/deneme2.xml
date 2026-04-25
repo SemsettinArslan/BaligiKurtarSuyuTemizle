@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QCARConfig>
+  <Tracking>
+    <ImageTarget name="kopekBaligi" size="0.100000 0.054563" />
+    <ImageTarget name="japon-baligi" size="0.400000 0.256757" />
+  </Tracking>
+</QCARConfig>
