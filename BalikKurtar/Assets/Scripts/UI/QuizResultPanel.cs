@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 namespace BalikKurtar.UI
@@ -21,6 +22,10 @@ namespace BalikKurtar.UI
         [SerializeField] private TextMeshProUGUI messageText;
         [SerializeField] private Button playAgainButton;
         [SerializeField] private Button backButton;
+        
+        [Header("Sahne Geçişi")]
+        [Tooltip("Quiz bittikten sonra geçilecek sahnenin tam adı (Örn: Level2)")]
+        [SerializeField] private string nextSceneName = "NextScene";
 
         private bool isVisible = false;
         private Sequence currentAnimation;
@@ -45,30 +50,30 @@ namespace BalikKurtar.UI
             float percentage = total > 0 ? (float)correct / total * 100f : 0f;
 
             if (scoreValueText != null) scoreValueText.text = score.ToString();
-            if (correctText != null) correctText.text = $"\u2705 Do\u011fru: {correct}";
-            if (wrongText != null) wrongText.text = $"\u274c Yanl\u0131\u015f: {wrong}";
+            if (correctText != null) correctText.text = $"Doğru: {correct}";
+            if (wrongText != null) wrongText.text = $"Yanlış: {wrong}";
 
             if (messageText != null)
             {
                 // Performansa göre mesaj
                 if (percentage >= 90)
                 {
-                    messageText.text = "\ud83c\udf1f M\u00fckemmel! Deniz uzman\u0131s\u0131n!";
+                    messageText.text = "Mükemmel! Deniz uzmansın!";
                     messageText.color = new Color(1f, 0.84f, 0f);
                 }
                 else if (percentage >= 70)
                 {
-                    messageText.text = "\ud83d\udc4f \u00c7ok iyi! Balıkları iyi tanıyorsun!";
+                    messageText.text = "Çok iyi! Balıkları iyi tanıyorsun!";
                     messageText.color = new Color(0.3f, 0.85f, 0.4f);
                 }
                 else if (percentage >= 50)
                 {
-                    messageText.text = "\ud83d\ude0a Fena de\u011fil! Biraz daha \u00e7alı\u015f!";
+                    messageText.text = "Fena değil! Biraz daha çalış!";
                     messageText.color = new Color(0.2f, 0.7f, 0.9f);
                 }
                 else
                 {
-                    messageText.text = "\ud83d\udcda Daha fazla kart okut ve \u00f6\u011fren!";
+                    messageText.text = "Daha fazla kart okut ve öğren!";
                     messageText.color = new Color(1f, 0.5f, 0.3f);
                 }
             }
@@ -128,7 +133,16 @@ namespace BalikKurtar.UI
         private void OnBackClicked()
         {
             Hide();
-            // AR moduna geri dön
+            // Yeni sahneye geçiş yap
+            if (!string.IsNullOrEmpty(nextSceneName))
+            {
+                Debug.Log($"[QuizResultPanel] Sahne yükleniyor: {nextSceneName}");
+                SceneManager.LoadScene(nextSceneName);
+            }
+            else
+            {
+                Debug.LogWarning("[QuizResultPanel] Geçiş yapılacak sahne adı (nextSceneName) atanmamış!");
+            }
         }
 
         private void HideImmediate()

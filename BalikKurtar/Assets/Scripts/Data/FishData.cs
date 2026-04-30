@@ -41,5 +41,9 @@ namespace BalikKurtar.Data
 
         [Tooltip("Bu balık için UI tema rengi")]
         public Color themeColor = new Color(0.1f, 0.6f, 0.9f, 1f);
+
+        [Header("Ses")]
+        [Tooltip("Balık okutulduğunda çalınacak bilgilendirme sesi (opsiyonel)")]
+        public AudioClip infoAudio;
     }
 }

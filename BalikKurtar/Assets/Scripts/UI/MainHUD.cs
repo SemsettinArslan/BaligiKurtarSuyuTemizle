@@ -60,7 +60,7 @@ namespace BalikKurtar.UI
         {
             if (discoveryText == null) return;
             
-            discoveryText.text = $"\ud83d\udc1f {count} Bal\u0131k Ke\u015ffedildi";
+            discoveryText.text = $"{count} Balık Keşfedildi";
             UpdateQuizButton();
 
             // Yeni keşif animasyonu
@@ -78,13 +78,13 @@ namespace BalikKurtar.UI
 
             if (canQuiz)
             {
-                quizButtonText.text = "\ud83c\udfae Quiz Ba\u015flat";
+                quizButtonText.text = "Quiz Başlat";
             }
             else
             {
                 int min = QuizManager.Instance?.GetMinRequired() ?? 2;
                 int current = DiscoveredFishManager.Instance?.DiscoveredCount ?? 0;
-                quizButtonText.text = $"\ud83d\udd12 {min - current} bal\u0131k daha ke\u015ffet";
+                quizButtonText.text = $"{min - current} balık daha keşfet";
             }
         }
 

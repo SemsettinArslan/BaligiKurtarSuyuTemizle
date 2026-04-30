@@ -13,11 +13,15 @@ MonoBehaviour:
   m_Name: japonBaligi
   m_EditorClassIdentifier: Assembly-CSharp::BalikKurtar.Data.FishData
   fishId: japon-baligi
-  displayName: japon-baligi
-  scientificName: japon-baligi
-  habitat: "JAPONN\t"
-  diet: JAPONN
-  funFact: JAPONN
-  sizeInfo: 5
+  displayName: "Japon Bal\u0131\u011F\u0131"
+  scientificName: Carassius auratus
+  habitat: "Tatl\u0131 su \u2014 g\xF6letler, nehirler ve akvaryumlar. Do\u011Fu
+    Asya k\xF6kenli olup d\xFCnya genelinde evcil olarak yeti\u015Ftirilir."
+  diet: "Omnivor \u2014 yosun, k\xFC\xE7\xFCk b\xF6cekler, plankton ve pul yem ile
+    beslenir."
+  funFact: "Japon bal\u0131klar\u0131n\u0131n haf\u0131zas\u0131n\u0131n 3 saniye
+    oldu\u011Fu efsane yanl\u0131\u015Ft\u0131r! Ara\u015Ft\u0131rmalar aylar boyunca
+    hat\u0131rlayabildiklerini g\xF6stermi\u015Ftir."
+  sizeInfo: 10-30 cm
   fishImage: {fileID: 21300000, guid: c174ff0e90817a54f950326c6c00ce7b, type: 3}
-  themeColor: {r: 0.9019608, g: 0.53862447, b: 0.10196079, a: 1}
+  themeColor: {r: 1, g: 0.6, b: 0.1, a: 1}

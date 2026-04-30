@@ -21,12 +21,22 @@ namespace BalikKurtar.AR
         [Tooltip("Bu hedefin altındaki (child) WorldSpaceFishInfo referansı")]
         [SerializeField] private WorldSpaceFishInfo localInfoPanel;
 
+        [Header("Ses")]
+        [Tooltip("Sesin çalınacağı AudioSource. Boş bırakılırsa bu objeye otomatik eklenir.")]
+        [SerializeField] private AudioSource audioSource;
+
         private ObserverBehaviour observerBehaviour;
         private bool isCurrentlyTracked = false;
 
         private void Start()
         {
             observerBehaviour = GetComponent<ObserverBehaviour>();
+
+            if (audioSource == null)
+            {
+                audioSource = gameObject.AddComponent<AudioSource>();
+                audioSource.playOnAwake = false;
+            }
 
             if (observerBehaviour != null)
             {
@@ -92,6 +102,13 @@ namespace BalikKurtar.AR
             {
                 Debug.LogWarning($"[FishCard] {gameObject.name} üzerinde localInfoPanel atanmamış!");
             }
+
+            // Ses çal
+            if (fishData.infoAudio != null && audioSource != null)
+            {
+                audioSource.clip = fishData.infoAudio;
+                audioSource.Play();
+            }
         }
 
         private void OnTargetLost()
@@ -100,6 +117,12 @@ namespace BalikKurtar.AR
             if (localInfoPanel != null)
             {
                 localInfoPanel.Hide();
+            }
+
+            // Hedef kaybolduğunda sesi durdur
+            if (audioSource != null && audioSource.isPlaying)
+            {
+                audioSource.Stop();
             }
         }
     }

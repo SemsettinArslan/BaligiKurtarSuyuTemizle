@@ -128,7 +128,7 @@ namespace BalikKurtar.UI
 
             if (questionText != null) questionText.text = question.questionText;
             if (progressText != null) progressText.text = $"Soru {index + 1}/{total}";
-            if (scoreText != null) scoreText.text = $"\u2b50 {QuizManager.Instance.Score}";
+            if (scoreText != null) scoreText.text = $"Skor: {QuizManager.Instance.Score}";
 
             for (int i = 0; i < 4; i++)
             {
@@ -180,7 +180,7 @@ namespace BalikKurtar.UI
                 }
             }
 
-            if (scoreText != null) scoreText.text = $"\u2b50 {QuizManager.Instance.Score}";
+            if (scoreText != null) scoreText.text = $"Skor: {QuizManager.Instance.Score}";
 
             StartCoroutine(WaitAndNext(isCorrect ? 1.0f : 1.8f));
         }
