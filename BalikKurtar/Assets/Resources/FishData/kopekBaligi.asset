@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5491a9179f0e5d845b213fda5e241310, type: 3}
   m_Name: kopekBaligi
   m_EditorClassIdentifier: Assembly-CSharp::BalikKurtar.Data.FishData
-  fishId: kopekBaligi
+  fishId: kopekBaligiSon
   displayName: "K\xF6pek Bal\u0131\u011F\u0131"
   scientificName: Selachimorpha
   habitat: "T\xFCm okyanuslar \u2014 s\u0131\u011F k\u0131y\u0131lardan derin denizlere
@@ -26,3 +26,4 @@ MonoBehaviour:
   sizeInfo: "T\xFCre g\xF6re 20 cm \u2013 12 m"
   fishImage: {fileID: 21300000, guid: 3c41df5c0a772d04b9f2824229f651be, type: 3}
   themeColor: {r: 0.2, g: 0.4, b: 0.7, a: 1}
+  infoAudio: {fileID: 8300000, guid: 42eebfa95d06e334fad4ecf1bac14cca, type: 3}

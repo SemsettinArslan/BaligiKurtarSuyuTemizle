@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5491a9179f0e5d845b213fda5e241310, type: 3}
+  m_Name: koiBaligi
+  m_EditorClassIdentifier: Assembly-CSharp::BalikKurtar.Data.FishData
+  fishId: koi_baligi_vuforia1
+  displayName: "Japon Bal\u0131\u011F\u0131"
+  scientificName: Carassius auratus
+  habitat: "Tatl\u0131 su \u2014 g\xF6letler, nehirler ve akvaryumlar. Do\u011Fu
+    Asya k\xF6kenli olup d\xFCnya genelinde evcil olarak yeti\u015Ftirilir."
+  diet: "Omnivor \u2014 yosun, k\xFC\xE7\xFCk b\xF6cekler, plankton ve pul yem ile
+    beslenir."
+  funFact: "Japon bal\u0131klar\u0131n\u0131n haf\u0131zas\u0131n\u0131n 3 saniye
+    oldu\u011Fu efsane yanl\u0131\u015Ft\u0131r! Ara\u015Ft\u0131rmalar aylar boyunca
+    hat\u0131rlayabildiklerini g\xF6stermi\u015Ftir."
+  sizeInfo: 10-30 cm
+  fishImage: {fileID: 21300000, guid: c174ff0e90817a54f950326c6c00ce7b, type: 3}
+  themeColor: {r: 1, g: 0.6, b: 0.1, a: 1}
+  infoAudio: {fileID: 0}
