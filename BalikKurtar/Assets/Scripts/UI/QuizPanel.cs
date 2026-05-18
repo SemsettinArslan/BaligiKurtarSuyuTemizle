@@ -32,11 +32,12 @@ namespace BalikKurtar.UI
         private Sequence currentAnimation;
         private Vector3 initialScale = Vector3.one;
 
-        // Renkler
-        private readonly Color normalColor = new Color(0.15f, 0.25f, 0.4f, 1f);
-        private readonly Color correctColor = new Color(0.2f, 0.7f, 0.3f, 1f);
-        private readonly Color wrongColor = new Color(0.8f, 0.2f, 0.2f, 1f);
-        private readonly Color highlightCorrectColor = new Color(0.25f, 0.8f, 0.4f, 1f);
+        [Header("Renkler")]
+        [SerializeField] private Color normalColor = new Color(0.27f, 0.63f, 0.9f, 1f);
+        [SerializeField] private Color correctColor = new Color(0.2f, 0.75f, 0.35f, 1f);
+        [SerializeField] private Color wrongColor = new Color(0.9f, 0.25f, 0.25f, 1f);
+        [SerializeField] private Color highlightCorrectColor = new Color(0.25f, 0.85f, 0.45f, 1f);
+        [SerializeField] private Color selectionHighlightColor = new Color(0.2f, 0.5f, 0.8f, 1f);
 
         private void Awake()
         {
@@ -217,7 +218,7 @@ namespace BalikKurtar.UI
 
             if (optionImages[index] != null)
             {
-                optionImages[index].DOColor(new Color(0.25f, 0.35f, 0.55f), 0.15f);
+                optionImages[index].DOColor(selectionHighlightColor, 0.15f);
             }
 
             QuizManager.Instance.SubmitAnswer(selectedAnswer);

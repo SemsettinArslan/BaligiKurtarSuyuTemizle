@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
+using BalikKurtar.Managers;
 using TMPro;
 
 namespace BalikKurtar.UI
@@ -21,6 +22,7 @@ namespace BalikKurtar.UI
         [SerializeField] private TextMeshProUGUI wrongText;
         [SerializeField] private TextMeshProUGUI messageText;
         [SerializeField] private Button playAgainButton;
+        [SerializeField] private TextMeshProUGUI playAgainButtonText;
         [SerializeField] private Button backButton;
         
         [Header("Sahne Geçişi")]
@@ -28,6 +30,7 @@ namespace BalikKurtar.UI
         [SerializeField] private string nextSceneName = "NextScene";
 
         private bool isVisible = false;
+        private bool failedQuiz = false;
         private Sequence currentAnimation;
         private Vector3 initialScale = Vector3.one;
 
@@ -53,6 +56,9 @@ namespace BalikKurtar.UI
             if (correctText != null) correctText.text = $"Doğru: {correct}";
             if (wrongText != null) wrongText.text = $"Yanlış: {wrong}";
 
+            // Puan kontrolü — 50 puanın altında başarısız
+            failedQuiz = score < 50;
+
             if (messageText != null)
             {
                 // Performansa göre mesaj
@@ -73,9 +79,21 @@ namespace BalikKurtar.UI
                 }
                 else
                 {
-                    messageText.text = "Daha fazla kart okut ve öğren!";
+                    messageText.text = "Kartları tekrar okutup öğrenmelisin!";
                     messageText.color = new Color(1f, 0.5f, 0.3f);
                 }
+            }
+
+            // Başarısız ise: sonraki oyun butonu deaktif, tekrar oyna → kartları tekrar okut
+            if (failedQuiz)
+            {
+                if (backButton != null) backButton.interactable = false;
+                if (playAgainButtonText != null) playAgainButtonText.text = "Kartları Tekrar Okut";
+            }
+            else
+            {
+                if (backButton != null) backButton.interactable = true;
+                if (playAgainButtonText != null) playAgainButtonText.text = "Tekrar Oyna";
             }
 
             // Animasyon
@@ -122,11 +140,23 @@ namespace BalikKurtar.UI
         {
             Hide();
 
-            // Quiz'i yeniden başlat
-            var gm = Core.GameManager.Instance;
-            if (gm != null)
+            if (failedQuiz)
             {
-                gm.StartQuiz();
+                // Başarısız — keşifleri sıfırla, öğrenci kartları tekrar okutmalı
+                if (DiscoveredFishManager.Instance != null)
+                {
+                    DiscoveredFishManager.Instance.ResetDiscoveries();
+                }
+                Debug.Log("[QuizResultPanel] Başarısız — keşifler sıfırlandı. Kartları tekrar okutun.");
+            }
+            else
+            {
+                // Başarılı — quiz'i yeniden başlat
+                var gm = Core.GameManager.Instance;
+                if (gm != null)
+                {
+                    gm.StartQuiz();
+                }
             }
         }
 

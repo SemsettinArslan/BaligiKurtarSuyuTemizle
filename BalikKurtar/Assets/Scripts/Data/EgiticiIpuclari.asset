@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5c46e25f8a80e24bab1dfda2d9d860c, type: 3}
+  m_Name: EgiticiIpuclari
+  m_EditorClassIdentifier: Assembly-CSharp::BalikKurtar.Data.LoadingTipsData
+  tips:
+  - "Giri\u015F Bilgilendirmesi1\n"
+  - "Giri\u015F Bilgilendirmesi12"
+  - "Giri\u015F Bilgilendirmesi13"

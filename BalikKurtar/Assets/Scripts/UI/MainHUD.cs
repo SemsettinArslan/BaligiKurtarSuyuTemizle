@@ -18,8 +18,9 @@ namespace BalikKurtar.UI
         [SerializeField] private TextMeshProUGUI quizButtonText;
         [SerializeField] private Image quizButtonImage;
 
-        private readonly Color activeColor = new Color(0.1f, 0.6f, 0.9f, 1f);
-        private readonly Color disabledColor = new Color(0.3f, 0.35f, 0.4f, 1f);
+        [Header("Buton Renkleri")]
+        [SerializeField] private Color activeColor = new Color(0.27f, 0.63f, 0.9f, 1f);
+        [SerializeField] private Color disabledColor = new Color(0.55f, 0.58f, 0.62f, 1f);
 
         private void OnEnable()
         {
