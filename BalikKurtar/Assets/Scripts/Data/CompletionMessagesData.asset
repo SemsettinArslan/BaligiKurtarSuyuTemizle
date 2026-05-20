@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7abd19dcac851c44812b69383fade86, type: 3}
+  m_Name: CompletionMessagesData
+  m_EditorClassIdentifier: Assembly-CSharp::BalikKurtar.Data.CompletionMessagesData
+  messages:
+  - "T\xFCm \xE7\xF6pleri temizledin! Su art\u0131k tertemiz ve bal\u0131klar g\xFCvende!"
+  - "Toplad\u0131g\u0131n at\u0131klar sayesinde bal\u0131klar art\u0131k daha g\xFCvenli
+    bir yuvada yasayabilir"
+  - "Denizi kirleticilerden ar\u0131nd\u0131rd\u0131n! Gelecegimiz art\u0131k daha
+    mavi!"
+  - "Harika bir \xE7evre koruyucususun! Ekosistemi kurtard\u0131n!"
+  - "Dogay\u0131 koruyarak ger\xE7ek bir deniz kahraman\u0131 oldun!"

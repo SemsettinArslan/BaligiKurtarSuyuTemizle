@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
 using TMPro;
+using BalikKurtar.Core;
+using BalikKurtar.Data;
 
 namespace BalikKurtar.SuTemizligi
 {
@@ -23,8 +25,17 @@ namespace BalikKurtar.SuTemizligi
         [Tooltip("Ilerleme bari offset (cop pozisyonunun ustunde)")]
         [SerializeField] private Vector2 progressBarOffset = new Vector2(0, 80f);
 
-        [Header("Durum Metni")]
-        [SerializeField] private TextMeshProUGUI statusText;
+
+
+        [Header("Kirlilik Çubuğu")]
+        [Tooltip("Kirlilik yüzdesini gösteren dolum görseli (Image.fillAmount)")]
+        [SerializeField] private Image pollutionBarFill;
+
+        [Tooltip("Kirlilik yüzde metni (ör: %75)")]
+        [SerializeField] private TextMeshProUGUI pollutionPercentText;
+
+        [Tooltip("Kirlilik çubuğu animasyon süresi (saniye)")]
+        [SerializeField] private float pollutionAnimDuration = 0.5f;
 
         [Header("Tamamlama Paneli")]
         [SerializeField] private CanvasGroup completionPanel;
@@ -34,6 +45,9 @@ namespace BalikKurtar.SuTemizligi
         [SerializeField] private TextMeshProUGUI completionTimeText;
         [SerializeField] private Button restartButton;
         [SerializeField] private Button nextButton;
+
+        [Tooltip("Rastgele tebrik mesajlarını barındıran veri kaynağı.")]
+        [SerializeField] private CompletionMessagesData completionMessages;
 
         [Header("Sahne Gecisi")]
         [Tooltip("Sonraki sahnenin adi")]
@@ -45,6 +59,7 @@ namespace BalikKurtar.SuTemizligi
         private TrashItem currentTrashTarget;
         private bool progressBarVisible;
         private Sequence completionSequence;
+        private Tween pollutionTween;
 
         // ==================== LIFECYCLE ====================
 
@@ -98,7 +113,7 @@ namespace BalikKurtar.SuTemizligi
                 WaterCleaningManager.Instance.OnTrashCleaned += OnTrashCleaned;
                 WaterCleaningManager.Instance.OnLevelComplete += OnLevelComplete;
 
-                UpdateStatusText(0, WaterCleaningManager.Instance.TotalTrashCount);
+                UpdatePollutionBar(0, WaterCleaningManager.Instance.TotalTrashCount, false);
             }
         }
 
@@ -114,6 +129,7 @@ namespace BalikKurtar.SuTemizligi
         private void OnDestroy()
         {
             completionSequence?.Kill();
+            pollutionTween?.Kill();
         }
 
         // ==================== ILERLEME BARI ====================
@@ -183,32 +199,65 @@ namespace BalikKurtar.SuTemizligi
             progressBarContainer.position = (Vector2)screenPos + progressBarOffset;
         }
 
-        // ==================== DURUM METNİ ====================
-
-        private void UpdateStatusText(int cleaned, int remaining)
-        {
-            if (statusText == null) return;
-
-            int total = cleaned + remaining;
-            statusText.text = $"{cleaned}/{total} Cop Temizlendi";
-
-            // Punch animasyonu
-            if (cleaned > 0)
-            {
-                statusText.transform.DOPunchScale(Vector3.one * 0.15f, 0.3f, 5);
-            }
-        }
-
         // ==================== EVENT HANDLERS ====================
 
         private void OnTrashCleaned(int cleaned, int remaining)
         {
-            UpdateStatusText(cleaned, remaining);
+            UpdatePollutionBar(cleaned, remaining, true);
         }
 
         private void OnLevelComplete()
         {
             ShowCompletionPanel();
+        }
+
+        // ==================== KİRLİLİK ÇUBUĞU ====================
+
+        /// <summary>
+        /// Kirlilik yüzdesini günceller.
+        /// Başlangıçta %100 (tüm çöpler var), temizledikçe azalır.
+        /// </summary>
+        private void UpdatePollutionBar(int cleaned, int remaining, bool animate)
+        {
+            int total = cleaned + remaining;
+            if (total <= 0) return;
+
+            float pollutionRatio = (float)remaining / total;
+            int percent = Mathf.RoundToInt(pollutionRatio * 100f);
+
+            // Yüzde metnini güncelle
+            if (pollutionPercentText != null)
+            {
+                pollutionPercentText.text = $"%{percent}";
+
+                if (animate && cleaned > 0)
+                {
+                    pollutionPercentText.transform.DOPunchScale(Vector3.one * 0.2f, 0.3f, 5);
+                }
+            }
+
+            // Fill amount güncelle
+            if (pollutionBarFill != null)
+            {
+                pollutionTween?.Kill();
+
+                if (animate)
+                {
+                    pollutionTween = pollutionBarFill.DOFillAmount(pollutionRatio, pollutionAnimDuration)
+                        .SetEase(Ease.OutQuad);
+                }
+                else
+                {
+                    pollutionBarFill.fillAmount = pollutionRatio;
+                }
+
+                // Renk geçişi: kırmızı (kirli) -> turuncu -> yeşil (temiz)
+                Color pollutionColor = Color.Lerp(
+                    new Color(0.2f, 0.85f, 0.3f, 1f),  // Yeşil (temiz)
+                    new Color(0.9f, 0.2f, 0.2f, 1f),    // Kırmızı (kirli)
+                    pollutionRatio);
+                pollutionBarFill.color = pollutionColor;
+            }
         }
 
         // ==================== TAMAMLAMA PANELİ ====================
@@ -222,17 +271,25 @@ namespace BalikKurtar.SuTemizligi
             var mgr = WaterCleaningManager.Instance;
             float time = mgr != null ? mgr.ElapsedTime : 0f;
 
-            if (completionTitle != null)
-                completionTitle.text = "Tebrikler!";
+            // Title'ı değiştirmeyip kullanıcının belirlediği haliyle bırakıyoruz.
 
             if (completionMessage != null)
-                completionMessage.text = "Tum copleri temizledin!\nSu artik tertemiz!";
+            {
+                if (completionMessages != null)
+                {
+                    completionMessage.text = completionMessages.GetRandomMessage();
+                }
+                else
+                {
+                    completionMessage.text = "Tüm çöpleri temizledin!\nSu artık tertemiz!";
+                }
+            }
 
             if (completionTimeText != null)
             {
                 int minutes = Mathf.FloorToInt(time / 60f);
                 int seconds = Mathf.FloorToInt(time % 60f);
-                completionTimeText.text = $"Sure: {minutes:00}:{seconds:00}";
+                completionTimeText.text = $"Toplam Süre {minutes:00}:{seconds:00}";
             }
 
             // Animasyon
@@ -257,14 +314,22 @@ namespace BalikKurtar.SuTemizligi
 
         private void OnRestartClicked()
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            string currentScene = SceneManager.GetActiveScene().name;
+
+            if (SceneFader.Instance != null)
+                SceneFader.Instance.FadeToScene(currentScene);
+            else
+                SceneManager.LoadScene(currentScene);
         }
 
         private void OnNextClicked()
         {
             if (!string.IsNullOrEmpty(nextSceneName))
             {
-                SceneManager.LoadScene(nextSceneName);
+                if (SceneFader.Instance != null)
+                    SceneFader.Instance.FadeToScene(nextSceneName);
+                else
+                    SceneManager.LoadScene(nextSceneName);
             }
             else
             {

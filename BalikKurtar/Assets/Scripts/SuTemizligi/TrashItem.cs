@@ -74,9 +74,46 @@ namespace BalikKurtar.SuTemizligi
         public bool IsCleaning => isCleaning;
         public bool IsCompleted => isCompleted;
 
+        // ==================== POOL DESTEĞI ====================
+
+        /// <summary>Çöp kutusunu runtime'da ayarlar (Pool Manager tarafından çağrılır).</summary>
+        public void SetTrashBinTarget(Transform target)
+        {
+            trashBinTarget = target;
+        }
+
+        /// <summary>
+        /// Objeyi pool'dan yeniden kullanılmak üzere sıfırlar.
+        /// Tüm iç durumu, animasyonları ve event'leri temizler.
+        /// </summary>
+        public void ResetForPool()
+        {
+            KillAllTweens();
+
+            currentProgress = 0f;
+            isCleaning = false;
+            isCompleted = false;
+
+            // Event listener'ları temizle
+            OnProgressChanged = null;
+            OnCleaningComplete = null;
+        }
+
         // ==================== LIFECYCLE ====================
 
         private void Start()
+        {
+            InitializeAndAnimate();
+        }
+
+        private void OnEnable()
+        {
+            // Pool'dan çıkıp aktif edildiğinde yeniden başlat
+            InitializeAndAnimate();
+        }
+
+        /// <summary>Başlangıç pozisyonunu kaydeder ve idle animasyonu başlatır.</summary>
+        private void InitializeAndAnimate()
         {
             initialPosition = transform.localPosition;
             initialRotation = transform.localEulerAngles;
@@ -229,7 +266,16 @@ namespace BalikKurtar.SuTemizligi
             {
                 // Manager'a copun tamamen gittigini bildir
                 WaterCleaningManager.Instance?.ReportTrashCleaned(this);
-                gameObject.SetActive(false);
+
+                // Pool varsa pool'a geri dön, yoksa deaktif et
+                if (TrashPoolManager.Instance != null)
+                {
+                    TrashPoolManager.Instance.ReturnToPool(this);
+                }
+                else
+                {
+                    gameObject.SetActive(false);
+                }
             });
         }
 

@@ -13,6 +13,13 @@ MonoBehaviour:
   m_Name: EgiticiIpuclari
   m_EditorClassIdentifier: Assembly-CSharp::BalikKurtar.Data.LoadingTipsData
   tips:
-  - "Giri\u015F Bilgilendirmesi1\n"
-  - "Giri\u015F Bilgilendirmesi12"
-  - "Giri\u015F Bilgilendirmesi13"
+  - "Denizlere at\u0131lan plastikler bal\u0131klar\u0131n ya\u015Fam\u0131n\u0131
+    tehlikeye atar"
+  - "Temiz su, bal\u0131klar\u0131n sa\u011Fl\u0131kl\u0131 b\xFCy\xFCmesi i\xE7in
+    \xE7ok \xF6nemlidir"
+  - "Bir plastik \u015Fi\u015Fe do\u011Fada y\xFCzlerce y\u0131l yok olmayabilir."
+  - "Deniz canl\u0131lar\u0131 bazen plastikleri yiyecek sanarak t\xFCketebilir."
+  - "At\u0131k ya\u011Flar suya d\xF6k\xFCld\xFC\u011F\xFCnde bir\xE7ok canl\u0131ya
+    zarar verir."
+  - "Temiz okyanuslar daha fazla canl\u0131ya ev sahipli\u011Fi yapar."
+  - "Do\u011Fay\u0131 korumak, gelecekteki canl\u0131lar\u0131 da korumakt\u0131r."

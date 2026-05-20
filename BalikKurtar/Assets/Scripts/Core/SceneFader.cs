@@ -47,6 +47,22 @@ namespace BalikKurtar.Core
         [Tooltip("Sahne geçişlerinde gösterilecek rastgele ipuçları verisi")]
         [SerializeField] private LoadingTipsData loadingTips;
 
+        [Header("Metin Ayarları")]
+        [Tooltip("İpucu metninin yazı tipi (Boş bırakılırsa varsayılan TMP yazı tipi kullanılır)")]
+        [SerializeField] private TMP_FontAsset tipTextFont;
+
+        [Tooltip("İpucu metninin yazı boyutu")]
+        [SerializeField] private float tipTextSize = 36f;
+
+        [Tooltip("İpucu metninin rengi")]
+        [SerializeField] private Color tipTextColor = Color.white;
+
+        [Tooltip("Metnin hizalama seçeneği")]
+        [SerializeField] private TextAlignmentOptions tipTextAlignment = TextAlignmentOptions.Center;
+
+        [Tooltip("Yazının ekrandaki dikey konumu (Y min - max aralığı)")]
+        [SerializeField] private Vector2 tipTextVerticalPosition = new Vector2(0.2f, 0.4f);
+
         // ==================== DURUM ====================
 
         private Canvas fadeCanvas;
@@ -159,15 +175,21 @@ namespace BalikKurtar.Core
                 txtObj.transform.SetParent(canvasObj.transform, false);
                 
                 tipText = txtObj.AddComponent<TextMeshProUGUI>();
-                tipText.alignment = TextAlignmentOptions.Center;
-                tipText.color = Color.white;
-                tipText.fontSize = 36;
+                
+                if (tipTextFont != null)
+                {
+                    tipText.font = tipTextFont;
+                }
+                
+                tipText.alignment = tipTextAlignment;
+                tipText.color = tipTextColor;
+                tipText.fontSize = tipTextSize;
                 tipText.enableWordWrapping = true;
                 tipText.raycastTarget = false;
                 
                 RectTransform txtRt = tipText.rectTransform;
-                txtRt.anchorMin = new Vector2(0.1f, 0.2f); // Ekranın alt kısımlarına hizala
-                txtRt.anchorMax = new Vector2(0.9f, 0.4f);
+                txtRt.anchorMin = new Vector2(0.1f, tipTextVerticalPosition.x); // Ekranın alt kısımlarına hizala
+                txtRt.anchorMax = new Vector2(0.9f, tipTextVerticalPosition.y);
                 txtRt.offsetMin = Vector2.zero;
                 txtRt.offsetMax = Vector2.zero;
             }

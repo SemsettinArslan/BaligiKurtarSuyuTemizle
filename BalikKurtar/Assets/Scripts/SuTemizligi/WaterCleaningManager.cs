@@ -9,6 +9,9 @@ namespace BalikKurtar.SuTemizligi
     /// Su Temizligi mini oyununun ana yöneticisi.
     /// Sahnedeki tüm çöpleri takip eder, temizleme ilerlemesini yönetir
     /// ve seviye tamamlama kontrolünü yapar.
+    /// 
+    /// TrashPoolManager sahnede varsa çöpleri pool'dan spawn eder;
+    /// yoksa sahnedeki mevcut çöpleri bulup kullanır (eski davranış).
     /// </summary>
     public class WaterCleaningManager : MonoBehaviour
     {
@@ -39,6 +42,7 @@ namespace BalikKurtar.SuTemizligi
         private int totalTrashCount;
         private int cleanedCount;
         private float elapsedTime;
+        private bool usePoolManager;
 
         // ==================== EVENTS ====================
 
@@ -80,7 +84,19 @@ namespace BalikKurtar.SuTemizligi
 
         private void Start()
         {
-            CollectTrashItems();
+            // Pool Manager sahnede var mı kontrol et
+            usePoolManager = TrashPoolManager.Instance != null;
+
+            if (usePoolManager)
+            {
+                // Pool Manager ile çöpleri spawn et
+                SpawnTrashFromPool();
+            }
+            else
+            {
+                // Eski davranış: sahnedeki mevcut çöpleri bul
+                CollectTrashItems();
+            }
 
             if (autoStart)
             {
@@ -127,6 +143,28 @@ namespace BalikKurtar.SuTemizligi
                 SetState(GameState.Playing);
         }
 
+        /// <summary>
+        /// Oyunu sıfırlayıp yeni çöplerle tekrar başlatır.
+        /// Pool Manager varsa yeni rastgele pozisyonlarla spawn eder.
+        /// </summary>
+        public void ResetAndRestart()
+        {
+            SetState(GameState.WaitingToStart);
+
+            if (usePoolManager && TrashPoolManager.Instance != null)
+            {
+                // Mevcut çöpleri temizle ve yeniden spawn et
+                TrashPoolManager.Instance.DespawnAll();
+                SpawnTrashFromPool();
+            }
+            else
+            {
+                CollectTrashItems();
+            }
+
+            StartGame();
+        }
+
         /// <summary>Bir çöp temizlendiğinde TrashItem tarafından çağrılır.</summary>
         public void ReportTrashCleaned(TrashItem trash)
         {
@@ -146,6 +184,18 @@ namespace BalikKurtar.SuTemizligi
 
         // ==================== INTERNAL ====================
 
+        /// <summary>Pool Manager kullanarak çöpleri spawn eder.</summary>
+        private void SpawnTrashFromPool()
+        {
+            var poolManager = TrashPoolManager.Instance;
+            if (poolManager == null) return;
+
+            allTrash = poolManager.SpawnTrash();
+            totalTrashCount = allTrash.Count;
+            Debug.Log($"[WaterCleaning] Pool'dan {totalTrashCount} çöp spawn edildi.");
+        }
+
+        /// <summary>Sahnedeki mevcut çöpleri bulur (eski davranış, pool olmadan).</summary>
         private void CollectTrashItems()
         {
             allTrash = FindObjectsByType<TrashItem>(FindObjectsSortMode.None).ToList();
