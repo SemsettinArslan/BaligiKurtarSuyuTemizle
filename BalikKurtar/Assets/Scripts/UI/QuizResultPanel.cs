@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
@@ -28,6 +30,10 @@ namespace BalikKurtar.UI
         [Header("Sahne Geçişi")]
         [Tooltip("Quiz bittikten sonra geçilecek sahnenin tam adı (Örn: Level2)")]
         [SerializeField] private string nextSceneName = "NextScene";
+
+        [Header("Firebase Liderlik Tablosu UI")]
+        [SerializeField] private List<TextMeshProUGUI> leaderboardRowTexts;
+        [SerializeField] private TextMeshProUGUI currentTeamRankText;
 
         private bool isVisible = false;
         private bool failedQuiz = false;
@@ -114,6 +120,115 @@ namespace BalikKurtar.UI
                         .SetDelay(0.5f)
                         .SetEase(Ease.OutCubic);
                 }
+            }
+
+            // Firebase'e skor gönderimi (Takım adı girilmişse)
+            string currentTeam = PlayerPrefs.GetString("CurrentTeamName", "");
+            if (!string.IsNullOrEmpty(currentTeam) && FirebaseLeaderboardManager.Instance != null)
+            {
+                FirebaseLeaderboardManager.Instance.SubmitScore(currentTeam, score, () => 
+                {
+                    // Liderlik tablosunu arayüzde güncelle (Sunucuya yazıldıktan sonra)
+                    UpdateLeaderboardUI();
+                });
+            }
+            else
+            {
+                // Çevrimdışı/Fallback durumunda doğrudan güncelle
+                UpdateLeaderboardUI();
+            }
+        }
+
+        private void UpdateLeaderboardUI()
+        {
+            if (leaderboardRowTexts == null || leaderboardRowTexts.Count == 0) return;
+
+            // Satırları başlangıçta yükleniyor durumuna getir
+            foreach (var rowText in leaderboardRowTexts)
+            {
+                if (rowText != null) rowText.text = "...";
+            }
+
+            if (currentTeamRankText != null)
+            {
+                currentTeamRankText.text = "Sıralamanız Hesaplanıyor...";
+            }
+
+            if (FirebaseLeaderboardManager.Instance != null)
+            {
+                // Genel sıralamayı doğru belirlemek için en yüksek 100 skoru çekiyoruz
+                FirebaseLeaderboardManager.Instance.GetTopScores(100, (entries) =>
+                {
+                    if (entries == null || entries.Count == 0)
+                    {
+                        foreach (var rowText in leaderboardRowTexts)
+                        {
+                            if (rowText != null) rowText.text = "-";
+                        }
+                        if (currentTeamRankText != null) currentTeamRankText.text = "Sıralama: -";
+                        return;
+                    }
+
+                    string myTeamName = PlayerPrefs.GetString("CurrentTeamName", "");
+
+                    // 1. Arayüzdeki satırları doldur (Top listesi kadar)
+                    int maxRows = leaderboardRowTexts.Count;
+                    for (int i = 0; i < maxRows; i++)
+                    {
+                        if (leaderboardRowTexts[i] == null) continue;
+
+                        if (i < entries.Count)
+                        {
+                            var entry = entries[i];
+                            string highlightStart = "";
+                            string highlightEnd = "";
+
+                            if (!string.IsNullOrEmpty(myTeamName) && entry.teamName.Equals(myTeamName, StringComparison.OrdinalIgnoreCase))
+                            {
+                                highlightStart = "<b><color=#FFD700>";
+                                highlightEnd = "</color></b>";
+                            }
+
+                            leaderboardRowTexts[i].text = $"{i + 1}. {highlightStart}{entry.teamName} - {entry.score} Puan{highlightEnd}";
+                        }
+                        else
+                        {
+                            // Kayıtlı veri satır sayısından azsa boş bırak
+                            leaderboardRowTexts[i].text = "-";
+                        }
+                    }
+
+                    // 2. Kendi takımımızın sıralamasını bul
+                    if (currentTeamRankText != null)
+                    {
+                        if (string.IsNullOrEmpty(myTeamName))
+                        {
+                            currentTeamRankText.text = "Sıralama: Takım adı bulunamadı";
+                        }
+                        else
+                        {
+                            // Büyük/küçük harf duyarsız aratarak sırasını bul (indeks 0'dan başladığı için +1 ekliyoruz)
+                            int rank = entries.FindIndex(e => e.teamName.Equals(myTeamName, StringComparison.OrdinalIgnoreCase)) + 1;
+
+                            if (rank > 0)
+                            {
+                                currentTeamRankText.text = $"Takımınız <b><color=#FFD700>{rank}.</color></b> sırada!";
+                            }
+                            else
+                            {
+                                currentTeamRankText.text = "Sıralama: Listede yer alınamadı";
+                            }
+                        }
+                    }
+                });
+            }
+            else
+            {
+                foreach (var rowText in leaderboardRowTexts)
+                {
+                    if (rowText != null) rowText.text = "Hata";
+                }
+                if (currentTeamRankText != null) currentTeamRankText.text = "Sistem Bağlantı Hatası";
             }
         }
 

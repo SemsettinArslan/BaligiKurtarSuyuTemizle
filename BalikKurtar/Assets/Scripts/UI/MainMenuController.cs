@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using BalikKurtar.Core;
+using BalikKurtar.Managers;
 using DG.Tweening;
 using TMPro;
 
@@ -38,6 +40,9 @@ namespace BalikKurtar.UI
         [Tooltip("Oyundan çık butonu")]
         [SerializeField] private Button quitButton;
 
+        [SerializeField] private Button leaderboardButton;
+
+
         // ==================== PANELLERİ ====================
 
         [Header("Ayarlar Paneli")]
@@ -62,6 +67,20 @@ namespace BalikKurtar.UI
         [SerializeField] private TextMeshProUGUI aboutTitleText;
         [SerializeField] private TextMeshProUGUI aboutContentText;
 
+        [Header("Takım Adı Paneli")]
+        [SerializeField] private CanvasGroup teamNamePanel;
+        [SerializeField] private RectTransform teamNamePanelRect;
+        [SerializeField] private TMP_InputField teamNameInputField;
+        [SerializeField] private Button teamNameSubmitButton;
+        [SerializeField] private Button teamNameCancelButton;
+        [SerializeField] private TextMeshProUGUI teamNameWarningText;
+
+        [Header("Ana Menü Liderlik Tablosu")]
+        [SerializeField] private CanvasGroup leaderboardPanel;
+        [SerializeField] private RectTransform leaderboardPanelRect;
+        [SerializeField] private Button leaderboardCloseButton;
+        [SerializeField] private List<TextMeshProUGUI> mainMenuLeaderboardRowTexts;
+
         // ==================== SAHNE ADLARI ====================
 
         [Header("Sahne Ayarları")]
@@ -76,6 +95,8 @@ namespace BalikKurtar.UI
             HidePanelImmediate(aboutPanel);
             HidePanelImmediate(settingsPanel);
             HidePanelImmediate(quitConfirmationPanel);
+            HidePanelImmediate(teamNamePanel);
+            HidePanelImmediate(leaderboardPanel);
 
             // Sahnede halihazırda (Inspector'dan ayarlanmış logolu) bir SceneFader var mı diye kontrol et
             SceneFader existingFader = Object.FindFirstObjectByType<SceneFader>();
@@ -165,19 +186,138 @@ namespace BalikKurtar.UI
                 quitCancelButton.onClick.RemoveAllListeners();
                 quitCancelButton.onClick.AddListener(OnQuitCancelClicked);
             }
+
+            if (teamNameSubmitButton != null)
+            {
+                teamNameSubmitButton.onClick.RemoveAllListeners();
+                teamNameSubmitButton.onClick.AddListener(OnTeamNameSubmitClicked);
+            }
+
+            if (teamNameCancelButton != null)
+            {
+                teamNameCancelButton.onClick.RemoveAllListeners();
+                teamNameCancelButton.onClick.AddListener(OnTeamNameCancelClicked);
+            }
+
+            if (leaderboardButton != null)
+            {
+                leaderboardButton.onClick.RemoveAllListeners();
+                leaderboardButton.onClick.AddListener(OnLeaderboardClicked);
+            }
+
+            if (leaderboardCloseButton != null)
+            {
+                leaderboardCloseButton.onClick.RemoveAllListeners();
+                leaderboardCloseButton.onClick.AddListener(OnLeaderboardCloseClicked);
+            }
         }
 
         // ==================== BUTON HANDLER'LARI ====================
 
-        /// <summary>AR Balık Keşfi sahnesine fade ile geçiş yapar.</summary>
+        /// <summary>Takım adı panelini açar. Eğer panel atanmamışsa doğrudan sahne geçişi yapar.</summary>
         private void OnPlayARClicked()
         {
-            Debug.Log("[MainMenu] Balıkları Keşfet — AR sahnesine geçiliyor...");
+            Debug.Log("[MainMenu] Balıkları Keşfet — Takım adı isteniyor...");
 
             // Buton animasyonu
             if (playARButton != null)
                 playARButton.transform.DOPunchScale(Vector3.one * 0.1f, 0.2f, 8);
 
+            if (teamNameWarningText != null)
+                teamNameWarningText.text = "";
+
+            if (teamNamePanel != null)
+            {
+                if (teamNameInputField != null)
+                {
+                    // Varsa eski takım adını getir
+                    teamNameInputField.text = PlayerPrefs.GetString("CurrentTeamName", "");
+                }
+
+                if (menuAnimator != null)
+                    menuAnimator.OpenPanel(teamNamePanel, teamNamePanelRect);
+                else
+                    ShowPanelFallback(teamNamePanel);
+            }
+            else
+            {
+                StartGameSession();
+            }
+        }
+
+        private void OnTeamNameSubmitClicked()
+        {
+            if (teamNameInputField == null) return;
+
+            string teamName = teamNameInputField.text.Trim();
+            if (string.IsNullOrEmpty(teamName))
+            {
+                // Input alanını hafifçe salla
+                teamNameInputField.transform.DOShakePosition(0.3f, 5f, 15);
+                if (teamNameWarningText != null)
+                    teamNameWarningText.text = "<color=red>Takım adı boş olamaz!</color>";
+                return;
+            }
+
+            // Firebase'de kontrol et
+            if (FirebaseLeaderboardManager.Instance != null)
+            {
+                if (teamNameWarningText != null)
+                    teamNameWarningText.text = "Takım adı kontrol ediliyor...";
+
+                SetTeamPanelInteractable(false);
+
+                FirebaseLeaderboardManager.Instance.CheckTeamNameExists(teamName, (exists) =>
+                {
+                    SetTeamPanelInteractable(true);
+
+                    if (exists)
+                    {
+                        teamNameInputField.transform.DOShakePosition(0.3f, 5f, 15);
+                        if (teamNameWarningText != null)
+                            teamNameWarningText.text = "<color=red>Bu takım adı zaten kullanımda!</color>";
+                    }
+                    else
+                    {
+                        // Başarılı, kaydet ve oyunu başlat
+                        PlayerPrefs.SetString("CurrentTeamName", teamName);
+                        PlayerPrefs.Save();
+
+                        if (menuAnimator != null)
+                            menuAnimator.ClosePanel(teamNamePanel, teamNamePanelRect);
+                        else
+                            HidePanelImmediate(teamNamePanel);
+
+                        StartGameSession();
+                    }
+                });
+            }
+            else
+            {
+                // FirebaseLeaderboardManager bulunamadıysa (çevrimdışı/fallback) doğrudan başlat
+                PlayerPrefs.SetString("CurrentTeamName", teamName);
+                PlayerPrefs.Save();
+                StartGameSession();
+            }
+        }
+
+        private void OnTeamNameCancelClicked()
+        {
+            if (menuAnimator != null)
+                menuAnimator.ClosePanel(teamNamePanel, teamNamePanelRect);
+            else
+                HidePanelImmediate(teamNamePanel);
+        }
+
+        private void SetTeamPanelInteractable(bool interactable)
+        {
+            if (teamNameInputField != null) teamNameInputField.interactable = interactable;
+            if (teamNameSubmitButton != null) teamNameSubmitButton.interactable = interactable;
+            if (teamNameCancelButton != null) teamNameCancelButton.interactable = interactable;
+        }
+
+        private void StartGameSession()
+        {
             // Sahne geçişi
             if (SceneFader.Instance != null)
             {
@@ -265,6 +405,80 @@ namespace BalikKurtar.UI
 #else
             Application.Quit();
 #endif
+        }
+
+        /// <summary>Ana menü liderlik tablosunu açar ve verileri günceller.</summary>
+        private void OnLeaderboardClicked()
+        {
+            Debug.Log("[MainMenu] Liderlik tablosu açılıyor.");
+
+            if (leaderboardButton != null)
+                leaderboardButton.transform.DOPunchScale(Vector3.one * 0.1f, 0.2f, 8);
+
+            if (menuAnimator != null)
+                menuAnimator.OpenPanel(leaderboardPanel, leaderboardPanelRect);
+            else
+                ShowPanelFallback(leaderboardPanel);
+
+            UpdateMainMenuLeaderboardUI();
+        }
+
+        private void OnLeaderboardCloseClicked()
+        {
+            if (menuAnimator != null)
+                menuAnimator.ClosePanel(leaderboardPanel, leaderboardPanelRect);
+            else
+                HidePanelImmediate(leaderboardPanel);
+        }
+
+        private void UpdateMainMenuLeaderboardUI()
+        {
+            if (mainMenuLeaderboardRowTexts == null || mainMenuLeaderboardRowTexts.Count == 0) return;
+
+            // Başlangıçta yükleniyor yaz
+            foreach (var rowText in mainMenuLeaderboardRowTexts)
+            {
+                if (rowText != null) rowText.text = "...";
+            }
+
+            if (FirebaseLeaderboardManager.Instance != null)
+            {
+                int limit = mainMenuLeaderboardRowTexts.Count;
+                FirebaseLeaderboardManager.Instance.GetTopScores(limit, (entries) =>
+                {
+                    if (entries == null || entries.Count == 0)
+                    {
+                        foreach (var rowText in mainMenuLeaderboardRowTexts)
+                        {
+                            if (rowText != null) rowText.text = "-";
+                        }
+                        return;
+                    }
+
+                    int maxRows = mainMenuLeaderboardRowTexts.Count;
+                    for (int i = 0; i < maxRows; i++)
+                    {
+                        if (mainMenuLeaderboardRowTexts[i] == null) continue;
+
+                        if (i < entries.Count)
+                        {
+                            var entry = entries[i];
+                            mainMenuLeaderboardRowTexts[i].text = $"{i + 1}. {entry.teamName} - {entry.score} Puan";
+                        }
+                        else
+                        {
+                            mainMenuLeaderboardRowTexts[i].text = "-";
+                        }
+                    }
+                });
+            }
+            else
+            {
+                foreach (var rowText in mainMenuLeaderboardRowTexts)
+                {
+                    if (rowText != null) rowText.text = "Hata";
+                }
+            }
         }
 
         // ==================== İÇERİK ====================

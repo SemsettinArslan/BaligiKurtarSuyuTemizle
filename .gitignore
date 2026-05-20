@@ -80,3 +80,6 @@ Assets/Resources/VuforiaConfiguration.asset
 *.tgz
 BalikKurtar/Assets/Sounds/
 BalikKurtar/Assets/Art/
+
+# Firebase configuration file containing sensitive DB URL
+*firebase_config.txt
