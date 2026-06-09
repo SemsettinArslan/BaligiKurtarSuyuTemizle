@@ -25,6 +25,15 @@ namespace BalikKurtar.AR
         [Tooltip("Sesin çalınacağı AudioSource. Boş bırakılırsa bu objeye otomatik eklenir.")]
         [SerializeField] private AudioSource audioSource;
 
+        [Header("Gelişmiş Takip Ayarları")]
+        [Tooltip("Genişletilmiş Takip (Extended Tracking) aktif olsun mu? " +
+                 "Eğer kapatılırsa (tavsiye edilen), kamerayı karttan çektiğiniz anda balık, UI ve ses anında kaybolur.")]
+        [SerializeField] private bool allowExtendedTracking = false;
+
+        [Header("Balık Modeli")]
+        [Tooltip("Döndürülebilen balık modeli veya wrapper konteyneri (Örn: Balik_Etkilesim). Kamerayı çekince anında kaybolması için buraya atanmalıdır.")]
+        [SerializeField] private GameObject fishModelContainer;
+
         private ObserverBehaviour observerBehaviour;
         private bool isCurrentlyTracked = false;
 
@@ -59,8 +68,12 @@ namespace BalikKurtar.AR
 
         private void OnTargetStatusChanged(ObserverBehaviour behaviour, TargetStatus status)
         {
-            bool tracked = status.Status == Status.TRACKED ||
-                           status.Status == Status.EXTENDED_TRACKED;
+            bool tracked = status.Status == Status.TRACKED;
+
+            if (allowExtendedTracking)
+            {
+                tracked = tracked || status.Status == Status.EXTENDED_TRACKED;
+            }
 
             if (tracked && !isCurrentlyTracked)
             {
@@ -103,6 +116,12 @@ namespace BalikKurtar.AR
                 Debug.LogWarning($"[FishCard] {gameObject.name} üzerinde localInfoPanel atanmamış!");
             }
 
+            // Balık modelini aktifleştir
+            if (fishModelContainer != null)
+            {
+                fishModelContainer.SetActive(true);
+            }
+
             // Ses çal
             if (fishData.infoAudio != null && audioSource != null)
             {
@@ -119,10 +138,52 @@ namespace BalikKurtar.AR
                 localInfoPanel.Hide();
             }
 
+            // Balık modelini gizle (Böylece Extended Tracking açık olsa bile anında kapanır)
+            if (fishModelContainer != null)
+            {
+                fishModelContainer.SetActive(false);
+            }
+
             // Hedef kaybolduğunda sesi durdur
             if (audioSource != null && audioSource.isPlaying)
             {
                 audioSource.Stop();
+            }
+
+            // Etkileşim durumunu sıfırla (eğer varsa)
+            var interactionHandlers = GetComponentsInChildren<FishInteractionHandler>(true);
+            foreach (var handler in interactionHandlers)
+            {
+                handler.ResetInteraction();
+            }
+        }
+
+        private void Update()
+        {
+            // Balık şu an ekranda tespit edilmiş durumdaysa tıklama kontrolü yap
+            if (!isCurrentlyTracked) return;
+
+            var pointer = UnityEngine.InputSystem.Pointer.current;
+            if (pointer != null && pointer.press.wasPressedThisFrame)
+            {
+                DetectClick(pointer.position.ReadValue());
+            }
+        }
+
+        private void DetectClick(Vector2 screenPosition)
+        {
+            Camera mainCam = Camera.main;
+            if (mainCam == null) return;
+
+            Ray ray = mainCam.ScreenPointToRay(screenPosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                // Tıklanan nesne bu Image Target'ın kendisi veya altındaki (child) çocuk nesnelerden biri mi?
+                if (hit.transform == transform || hit.transform.IsChildOf(transform))
+                {
+                    Debug.Log($"<color=cyan>[FishCardHandler]</color> Okutulan balığa tıklandı! " +
+                              $"<b>Balık ID:</b> {fishId}, <b>Tıklanan Obje:</b> {hit.transform.name}");
+                }
             }
         }
     }

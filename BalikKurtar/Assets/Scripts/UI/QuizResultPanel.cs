@@ -59,8 +59,8 @@ namespace BalikKurtar.UI
             float percentage = total > 0 ? (float)correct / total * 100f : 0f;
 
             if (scoreValueText != null) scoreValueText.text = score.ToString();
-            if (correctText != null) correctText.text = $"Doğru: {correct}";
-            if (wrongText != null) wrongText.text = $"Yanlış: {wrong}";
+            if (correctText != null) correctText.text = $"Dogru: {correct}";
+            if (wrongText != null) wrongText.text = $"Yanlıs: {wrong}";
 
             // Puan kontrolü — 50 puanın altında başarısız
             failedQuiz = score < 50;

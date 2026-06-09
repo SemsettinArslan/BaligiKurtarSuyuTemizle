@@ -143,6 +143,20 @@ namespace BalikKurtar.SuTemizligi
                 SetState(GameState.Playing);
         }
 
+        /// <summary>Oyunu duraklatır.</summary>
+        public void PauseGame()
+        {
+            if (CurrentState == GameState.Playing)
+                SetState(GameState.Paused);
+        }
+
+        /// <summary>Oyunu devam ettirir.</summary>
+        public void ResumeGame()
+        {
+            if (CurrentState == GameState.Paused)
+                SetState(GameState.Playing);
+        }
+
         /// <summary>
         /// Oyunu sıfırlayıp yeni çöplerle tekrar başlatır.
         /// Pool Manager varsa yeni rastgele pozisyonlarla spawn eder.

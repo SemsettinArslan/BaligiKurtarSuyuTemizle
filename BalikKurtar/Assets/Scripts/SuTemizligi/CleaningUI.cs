@@ -9,6 +9,29 @@ using BalikKurtar.Data;
 namespace BalikKurtar.SuTemizligi
 {
     /// <summary>
+    /// Su Temizliği sırasında tetiklenecek eğitici kirlilik eşiklerini tutar.
+    /// </summary>
+    [System.Serializable]
+    public class PollutionMilestone
+    {
+        [Range(0f, 100f)]
+        [Tooltip("Bu kirlilik yüzdesinin ALTINA düşüldüğünde tetiklenir (ör: %50)")]
+        public float pollutionThresholdPercent;
+        
+        [Tooltip("Aşama başlığı (ör: Harika Gelişme!)")]
+        public string title;
+        
+        [TextArea(3, 5)]
+        [Tooltip("Eğitici mesaj içeriği")]
+        public string message;
+        
+        [Tooltip("Panelde gösterilecek görsel (opsiyonel)")]
+        public Sprite infoSprite;
+        
+        [HideInInspector] public bool isTriggered = false; // Tekrar tetiklenmeyi önler
+    }
+
+    /// <summary>
     /// Su Temizligi mini oyununun tum UI bilesenlerini yonetir.
     /// Ilerleme bari, skor, durum metni ve seviye tamamlama paneli.
     /// Screen Space - Overlay Canvas uzerinde calisir.
@@ -25,7 +48,23 @@ namespace BalikKurtar.SuTemizligi
         [Tooltip("Ilerleme bari offset (cop pozisyonunun ustunde)")]
         [SerializeField] private Vector2 progressBarOffset = new Vector2(0, 80f);
 
+        [Header("Başlangıç Bilgi Paneli (Pre-Game)")]
+        [SerializeField] private CanvasGroup preGamePanel;
+        [SerializeField] private RectTransform preGamePanelRect;
+        [SerializeField] private TextMeshProUGUI preGameTitleText;
+        [SerializeField] private TextMeshProUGUI preGameInfoText;
+        [SerializeField] private Button startGameButton;
+        [TextArea(3, 10)]
+        [SerializeField] private string preGameInfoMessage = "Denizlerimiz plastikler, kimyasallar ve evsel atıklar yüzünden tehlike altında! Çöpleri temizleyerek deniz canlılarını kurtarabilirsin. Hadi başlayalım!";
 
+        [Header("Aşama Bilgi Panelleri (Milestones)")]
+        [SerializeField] private CanvasGroup milestonePanel;
+        [SerializeField] private RectTransform milestonePanelRect;
+        [SerializeField] private TextMeshProUGUI milestoneTitleText;
+        [SerializeField] private TextMeshProUGUI milestoneInfoText;
+        [SerializeField] private Image milestoneImage;
+        [SerializeField] private Button closeMilestoneButton;
+        [SerializeField] private System.Collections.Generic.List<PollutionMilestone> milestones = new System.Collections.Generic.List<PollutionMilestone>();
 
         [Header("Kirlilik Çubuğu")]
         [Tooltip("Kirlilik yüzdesini gösteren dolum görseli (Image.fillAmount)")]
@@ -83,6 +122,23 @@ namespace BalikKurtar.SuTemizligi
                 restartButton.onClick.AddListener(OnRestartClicked);
             if (nextButton != null)
                 nextButton.onClick.AddListener(OnNextClicked);
+
+            // Yeni panellerin buton event'leri ve gizlenmesi
+            if (startGameButton != null)
+                startGameButton.onClick.AddListener(OnStartGameClicked);
+            if (closeMilestoneButton != null)
+                closeMilestoneButton.onClick.AddListener(OnCloseMilestoneClicked);
+
+            if (preGamePanel != null)
+            {
+                preGamePanel.alpha = 0f;
+                preGamePanel.gameObject.SetActive(false);
+            }
+            if (milestonePanel != null)
+            {
+                milestonePanel.alpha = 0f;
+                milestonePanel.gameObject.SetActive(false);
+            }
         }
 
         private void OnEnable()
@@ -115,6 +171,18 @@ namespace BalikKurtar.SuTemizligi
 
                 UpdatePollutionBar(0, WaterCleaningManager.Instance.TotalTrashCount, false);
             }
+
+            // Aşamaları sıfırla
+            if (milestones != null)
+            {
+                foreach (var milestone in milestones)
+                {
+                    milestone.isTriggered = false;
+                }
+            }
+
+            // Başlangıç panelini göster
+            ShowPreGamePanel();
         }
 
         private void LateUpdate()
@@ -204,6 +272,7 @@ namespace BalikKurtar.SuTemizligi
         private void OnTrashCleaned(int cleaned, int remaining)
         {
             UpdatePollutionBar(cleaned, remaining, true);
+            CheckPollutionMilestones(cleaned, remaining);
         }
 
         private void OnLevelComplete()
@@ -335,6 +404,198 @@ namespace BalikKurtar.SuTemizligi
             {
                 Debug.LogWarning("[CleaningUI] Sonraki sahne adi atanmamis!");
             }
+        }
+
+        // ==================== BİLGİLENDİRİCİ PANELLER VE MILESTONES ====================
+
+        private void CheckPollutionMilestones(int cleaned, int remaining)
+        {
+            if (remaining <= 0) return; // Seviye bittiğinde milestone açma, completion panel açılacak.
+            
+            int total = cleaned + remaining;
+            if (total <= 0 || milestones == null) return;
+
+            float pollutionRatio = (float)remaining / total;
+            float currentPollutionPercent = pollutionRatio * 100f;
+
+            foreach (var milestone in milestones)
+            {
+                if (!milestone.isTriggered && currentPollutionPercent <= milestone.pollutionThresholdPercent)
+                {
+                    milestone.isTriggered = true;
+                    ShowMilestonePanel(milestone);
+                    break; // Aynı anda sadece bir tane aç
+                }
+            }
+        }
+
+        private void ShowPreGamePanel()
+        {
+            if (preGamePanel == null)
+            {
+                // Panel atanmadıysa doğrudan oyunu başlat
+                if (WaterCleaningManager.Instance != null)
+                {
+                    WaterCleaningManager.Instance.StartGame();
+                }
+                return;
+            }
+
+            if (preGameTitleText != null) preGameTitleText.text = "Deniz Temizliği Başlıyor!";
+            if (preGameInfoText != null) preGameInfoText.text = preGameInfoMessage;
+
+            preGamePanel.gameObject.SetActive(true);
+            preGamePanel.alpha = 0f;
+            preGamePanel.interactable = false;
+            preGamePanel.blocksRaycasts = false;
+
+            Sequence seq = DOTween.Sequence();
+            if (preGamePanelRect != null)
+            {
+                preGamePanelRect.localScale = Vector3.one * 0.85f;
+                seq.Append(preGamePanel.DOFade(1f, 0.4f));
+                seq.Join(preGamePanelRect.DOScale(Vector3.one, 0.4f).SetEase(Ease.OutBack));
+            }
+            else
+            {
+                seq.Append(preGamePanel.DOFade(1f, 0.4f));
+            }
+
+            seq.OnComplete(() =>
+            {
+                preGamePanel.interactable = true;
+                preGamePanel.blocksRaycasts = true;
+            });
+        }
+
+        private void OnStartGameClicked()
+        {
+            HidePreGamePanel(() =>
+            {
+                if (WaterCleaningManager.Instance != null)
+                {
+                    WaterCleaningManager.Instance.StartGame();
+                }
+            });
+        }
+
+        private void HidePreGamePanel(System.Action onComplete = null)
+        {
+            if (preGamePanel == null)
+            {
+                onComplete?.Invoke();
+                return;
+            }
+
+            preGamePanel.interactable = false;
+            preGamePanel.blocksRaycasts = false;
+
+            Sequence seq = DOTween.Sequence();
+            if (preGamePanelRect != null)
+            {
+                seq.Append(preGamePanel.DOFade(0f, 0.3f));
+                seq.Join(preGamePanelRect.DOScale(Vector3.one * 0.85f, 0.3f).SetEase(Ease.InBack));
+            }
+            else
+            {
+                seq.Append(preGamePanel.DOFade(0f, 0.3f));
+            }
+
+            seq.OnComplete(() =>
+            {
+                preGamePanel.gameObject.SetActive(false);
+                onComplete?.Invoke();
+            });
+        }
+
+        private void ShowMilestonePanel(PollutionMilestone milestone)
+        {
+            if (milestonePanel == null) return;
+
+            if (milestoneTitleText != null) milestoneTitleText.text = milestone.title;
+            if (milestoneInfoText != null) milestoneInfoText.text = milestone.message;
+            if (milestoneImage != null)
+            {
+                if (milestone.infoSprite != null)
+                {
+                    milestoneImage.sprite = milestone.infoSprite;
+                    milestoneImage.gameObject.SetActive(true);
+                }
+                else
+                {
+                    milestoneImage.gameObject.SetActive(false);
+                }
+            }
+
+            // Oyunu duraklat
+            if (WaterCleaningManager.Instance != null)
+            {
+                WaterCleaningManager.Instance.PauseGame();
+            }
+
+            milestonePanel.gameObject.SetActive(true);
+            milestonePanel.alpha = 0f;
+            milestonePanel.interactable = false;
+            milestonePanel.blocksRaycasts = false;
+
+            Sequence seq = DOTween.Sequence();
+            if (milestonePanelRect != null)
+            {
+                milestonePanelRect.localScale = Vector3.one * 0.85f;
+                seq.Append(milestonePanel.DOFade(1f, 0.4f));
+                seq.Join(milestonePanelRect.DOScale(Vector3.one, 0.4f).SetEase(Ease.OutBack));
+            }
+            else
+            {
+                seq.Append(milestonePanel.DOFade(1f, 0.4f));
+            }
+
+            seq.OnComplete(() =>
+            {
+                milestonePanel.interactable = true;
+                milestonePanel.blocksRaycasts = true;
+            });
+        }
+
+        private void OnCloseMilestoneClicked()
+        {
+            HideMilestonePanel(() =>
+            {
+                // Oyunu devam ettir
+                if (WaterCleaningManager.Instance != null)
+                {
+                    WaterCleaningManager.Instance.ResumeGame();
+                }
+            });
+        }
+
+        private void HideMilestonePanel(System.Action onComplete = null)
+        {
+            if (milestonePanel == null)
+            {
+                onComplete?.Invoke();
+                return;
+            }
+
+            milestonePanel.interactable = false;
+            milestonePanel.blocksRaycasts = false;
+
+            Sequence seq = DOTween.Sequence();
+            if (milestonePanelRect != null)
+            {
+                seq.Append(milestonePanel.DOFade(0f, 0.3f));
+                seq.Join(milestonePanelRect.DOScale(Vector3.one * 0.85f, 0.3f).SetEase(Ease.InBack));
+            }
+            else
+            {
+                seq.Append(milestonePanel.DOFade(0f, 0.3f));
+            }
+
+            seq.OnComplete(() =>
+            {
+                milestonePanel.gameObject.SetActive(false);
+                onComplete?.Invoke();
+            });
         }
     }
 }
