@@ -51,6 +51,7 @@ namespace BalikKurtar.UI
         [SerializeField] private Button settingsCloseButton;
         [SerializeField] private Slider sfxSlider;
         [SerializeField] private Slider voiceSlider;
+        [SerializeField] private Slider musicSlider;
 
         [Header("Çıkış Onay Paneli")]
         [SerializeField] private CanvasGroup quitConfirmationPanel;
@@ -130,6 +131,12 @@ namespace BalikKurtar.UI
                 {
                     voiceSlider.value = Managers.AudioManager.Instance.GetVoiceVolume();
                     voiceSlider.onValueChanged.AddListener(val => Managers.AudioManager.Instance.SetVoiceVolume(val));
+                }
+
+                if (musicSlider != null)
+                {
+                    musicSlider.value = Managers.AudioManager.Instance.GetMusicVolume();
+                    musicSlider.onValueChanged.AddListener(val => Managers.AudioManager.Instance.SetMusicVolume(val));
                 }
             }
         }

@@ -23,6 +23,6 @@ MonoBehaviour:
     ve \u0131sl\u0131klar kullanarak ileti\u015Fim kurarlar. Hatta her yunusun kendine
     \xF6zg\xFC bir 'isim \u0131sl\u0131\u011F\u0131' vard\u0131r."
   sizeInfo: "1.5 m \u2013 4 m"
-  fishImage: {fileID: 21300000, guid: 1a18e6dbea21eb84c9726c50f07459e2, type: 3}
+  fishImage: {fileID: 21300000, guid: cfd99481b51c9b74998dc3f8f9ddacb2, type: 3}
   themeColor: {r: 0.1, g: 0.6, b: 0.9, a: 1}
   infoAudio: {fileID: 8300000, guid: 6489f99fcffe3274fb0e8855ab5efff3, type: 3}

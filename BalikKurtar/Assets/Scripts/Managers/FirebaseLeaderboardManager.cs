@@ -47,37 +47,93 @@ namespace BalikKurtar.Managers
         /// </summary>
         private void LoadDatabaseConfig()
         {
+            StartCoroutine(LoadDatabaseConfigCoroutine());
+        }
+
+        private IEnumerator LoadDatabaseConfigCoroutine()
+        {
             string configPath = Path.Combine(Application.streamingAssetsPath, "firebase_config.txt");
 
-            try
+            // Android'de StreamingAssets klasöründeki dosyalar sıkıştırılmış APK içinde olduğundan,
+            // doğrudan C# File sınıfı (File.Exists / File.ReadAllText) ile okunamaz.
+            // Bu yüzden UnityWebRequest veya Resources fallback kullanıyoruz.
+            bool loadSuccess = false;
+
+            // Platform Android ise veya URL WebRequest üzerinden okunmak isteniyorsa
+            if (Application.platform == RuntimePlatform.Android || configPath.Contains("://"))
             {
-                if (File.Exists(configPath))
+                using (UnityWebRequest webRequest = UnityWebRequest.Get(configPath))
                 {
-                    string fileContent = File.ReadAllText(configPath).Trim();
-                    if (!string.IsNullOrEmpty(fileContent) && fileContent.StartsWith("http"))
+                    yield return webRequest.SendWebRequest();
+
+                    if (webRequest.result == UnityWebRequest.Result.Success)
                     {
-                        databaseURL = fileContent;
-                        if (!databaseURL.EndsWith("/"))
+                        string fileContent = webRequest.downloadHandler.text.Trim();
+                        if (ProcessConfigContent(fileContent))
                         {
-                            databaseURL += "/";
+                            loadSuccess = true;
+                            Debug.Log($"[Firebase] URL StreamingAssets (UnityWebRequest) üzerinden başarıyla yüklendi: {databaseURL}");
                         }
-                        isInitialized = true;
-                        Debug.Log($"[Firebase] URL başarıyla yüklendi: {databaseURL}");
+                    }
+                }
+            }
+            else
+            {
+                // Windows, Mac, Editor vb. platformlarda doğrudan hızlı File IO dene
+                try
+                {
+                    if (File.Exists(configPath))
+                    {
+                        string fileContent = File.ReadAllText(configPath).Trim();
+                        if (ProcessConfigContent(fileContent))
+                        {
+                            loadSuccess = true;
+                            Debug.Log($"[Firebase] URL StreamingAssets (File IO) üzerinden başarıyla yüklendi: {databaseURL}");
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"[Firebase] File IO ile config okunurken hata oluştu: {e.Message}");
+                }
+            }
+
+            // Eğer StreamingAssets'ten okuma başarısız olduysa, Resources klasöründen oku (Büyük kolaylık/Fallback)
+            if (!loadSuccess)
+            {
+                TextAsset resourceConfig = Resources.Load<TextAsset>("firebase_config");
+                if (resourceConfig != null)
+                {
+                    string fileContent = resourceConfig.text.Trim();
+                    if (ProcessConfigContent(fileContent))
+                    {
+                        Debug.Log($"[Firebase] URL Resources/firebase_config üzerinden başarıyla yüklendi: {databaseURL}");
                     }
                     else
                     {
-                        Debug.LogWarning("[Firebase] Config dosyası geçerli bir URL içermiyor!");
+                        Debug.LogError("[Firebase] Resources/firebase_config dosyası geçerli bir URL içermiyor!");
                     }
                 }
                 else
                 {
-                    Debug.LogWarning("[Firebase] firebase_config.txt dosyası bulunamadı!");
+                    Debug.LogError("[Firebase] firebase_config.txt ne StreamingAssets'ten ne de Resources klasöründen yüklenemedi!");
                 }
             }
-            catch (Exception e)
+        }
+
+        private bool ProcessConfigContent(string content)
+        {
+            if (!string.IsNullOrEmpty(content) && content.StartsWith("http"))
             {
-                Debug.LogError($"[Firebase] Config dosyası okunurken hata oluştu: {e.Message}");
+                databaseURL = content;
+                if (!databaseURL.EndsWith("/"))
+                {
+                    databaseURL += "/";
+                }
+                isInitialized = true;
+                return true;
             }
+            return false;
         }
 
         /// <summary>

@@ -24,6 +24,6 @@ MonoBehaviour:
     olu\u015Fur, hi\xE7 kemikleri yoktur! Ayr\u0131ca di\u015Fleri \xF6m\xFCr boyunca
     yenilenir."
   sizeInfo: "T\xFCre g\xF6re 20 cm \u2013 12 m"
-  fishImage: {fileID: 21300000, guid: bdeb5a87b1647974ebd4ee1ce2dfd7ca, type: 3}
-  themeColor: {r: 0.2, g: 0.4, b: 0.7, a: 1}
+  fishImage: {fileID: 21300000, guid: 0631b828fca05cf4ca371fe45d5b2fe6, type: 3}
+  themeColor: {r: 0.6226415, g: 0.12132317, b: 0.0029369951, a: 1}
   infoAudio: {fileID: 8300000, guid: 42eebfa95d06e334fad4ecf1bac14cca, type: 3}

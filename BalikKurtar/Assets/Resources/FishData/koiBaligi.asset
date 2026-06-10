@@ -16,13 +16,11 @@ MonoBehaviour:
   displayName: "Koi Bal\u0131\u011F\u0131"
   scientificName: Cyprinus rubrofuscus
   habitat: "Tatl\u0131 su g\xF6letlerinde, s\xFCs havuzlar\u0131nda ve yava\u015F
-    akan nehirlerde ya\u015Farlar. \xD6zellikle Japonya ve \xC7in k\xF6kenli olup
-    g\xFCn\xFCm\xFCzde d\xFCnyan\u0131n bir\xE7ok yerindeki yapay havuzlarda yeti\u015Ftirilmektedir."
+    akan nehirlerde ya\u015Farlar."
   diet: "Omnivordur. Yosunlar, su bitkileri, b\xF6cek larvalar\u0131, k\xFC\xE7\xFCk
     kabuklular ve \xF6zel bal\u0131k yemleriyle beslenir."
   funFact: "Koi bal\u0131klar\u0131 uzun \xF6m\xFCrleriyle \xFCnl\xFCd\xFCr ve baz\u0131lar\u0131
-    50 y\u0131ldan fazla ya\u015Fayabilir. Japon k\xFClt\xFCr\xFCnde \u015Fans, sab\u0131r
-    ve g\xFCc\xFCn sembol\xFC olarak kabul edilirler."
+    50 y\u0131ldan fazla ya\u015Fayabilir."
   sizeInfo: 40-90 cm
   fishImage: {fileID: 21300000, guid: 1def16f678a14f646892f1cfc18d343c, type: 3}
   themeColor: {r: 1, g: 0.54901963, b: 0.25882354, a: 1}

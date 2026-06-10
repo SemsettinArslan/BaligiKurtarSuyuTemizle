@@ -78,6 +78,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7da1ce1d71fd6614291145c604874f44, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3359465867407157570}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7da1ce1d71fd6614291145c604874f44, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -8374456745762762330}
   m_SourcePrefab: {fileID: 100100000, guid: 7da1ce1d71fd6614291145c604874f44, type: 3}
 --- !u!1 &2377339832224028422 stripped
 GameObject:
@@ -126,3 +129,21 @@ MonoBehaviour:
   shakeStrength: 0.05
   flyDuration: 0.8
   jumpHeight: 3
+--- !u!114 &-8374456745762762330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2377339832224028422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Outline
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 5
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
