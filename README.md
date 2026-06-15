@@ -58,12 +58,7 @@ Geleneksel müze ziyaretlerinde çocuklar çoğunlukla pasif şekilde gözlem ya
 
 ---
 
-## 10. Kaynaklar
-- Eklenecek.
-  
----
-
-## 11. Anahtar Kelimeler
+## 10. Anahtar Kelimeler
 - Karma Gerçeklik (MR)
 - Eğitim Teknolojisi
 - Oyunlaştırma

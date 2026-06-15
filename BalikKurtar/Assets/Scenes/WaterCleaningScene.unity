@@ -536,7 +536,7 @@ MonoBehaviour:
     isTriggered: 0
   - pollutionThresholdPercent: 20
     title: "Kirlilik Azal\u0131yor"
-    message: "Suyu temizlemek \xFCzeresin----------s---"
+    message: "Suyu temizlemek \xFCzeresin bal\u0131klar senin sayende daha mutlu."
     infoSprite: {fileID: 0}
     isTriggered: 0
   pollutionBarFill: {fileID: 726286146}
@@ -1804,8 +1804,6 @@ MonoBehaviour:
   - {fileID: 2377339832224028422, guid: f1c2ed83a42b6494bb17d55c75688449, type: 3}
   - {fileID: 1751564321108858381, guid: 21e785f56e89193438c25efb70e5ced8, type: 3}
   - {fileID: 6049677138728900615, guid: 9267f7151ac23de4e946300114bf6fc2, type: 3}
-  - {fileID: 5479138854609273212, guid: 80dc1336979ef8344a17f11662c6b2af, type: 3}
-  - {fileID: 6708135543208121160, guid: 4f3215e323a71e34bb82f644ee2da4b5, type: 3}
   trashBinTarget: {fileID: 283585401}
   spawnCount: 5
   spawnCenter: {x: 0, y: -1.5, z: -2}
